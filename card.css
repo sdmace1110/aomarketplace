@@ -1,71 +1,203 @@
 :root {
-    --primary: rgb(137, 236, 167);
-    --secondary: rgb(169, 215, 247);
-    --tertiary: rgb(0, 0, 0);
-    --bg: rgb(40, 41, 40);
-    --bglight: rgb(142, 143, 142);
-    --bgaccent: rgb(250, 92, 92);
-    --lighttext: rgb(197, 214, 206);
+  --primary: rgb(137, 236, 167);
+  --secondary: rgb(169, 215, 247);
+  --tertiary: hotpink;
+  --bg: rgb(40, 41, 40);
+  --bglight: rgb(142, 143, 142);
+  --bgaccent: rgb(250, 92, 92);
+  --lighttext: rgb(213, 214, 197);
+  --fort-sterling: #f2faff;
+  --bridgewatch: #fff267;
+  --lymhurst: #13ff02;
+  --martlock: #43edff;
+  --thetford: #f617ff;
+  --caerleon: #972a14;
 }
 
 .card {
-    display: flex;
-    width: 450px;
-    justify-content: center;
-    margin-top: 20px;
-    border: 3px solid var(--secondary);
-    border-radius: 5px;
-    padding: 1em;
-    background-color: var(--bg);
-    flex-direction: column;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
+  display: flex;
+  width: 450px;
+  background-color: #333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 20px;
+}
+.card-image {
+  width: 33.33%;
+  background-size: cover;
+  background-position: center;
+}
+.card-content {
+  padding: 20px;
+  width: 66.67%;
+  border-top: 2px solid lime;
+  border-right: 2px solid lime;
+  border-bottom: 2px solid lime;
+  border-radius: 0 8px 8px 0;
+}
+.card-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+.card-quality {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+.card-group {
+  margin-bottom: 10px;
+}
+.card-group h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #555;
+}
+.card-group p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+.dark-mode {
+  background-color: #fff;
+  color: #333;
+}
+.dark-mode .card {
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.dark-mode .card-group h3 {
+  color: #bbb;
 }
 
-.card--title-holder {
-    display: flex;
-    width: 100%;
-    justify-content: space-evenly;
-    align-items: center;
-    padding: 0.8em;
-}
+/* .card {
+  display: flex;
+  width: 450px;
+  justify-content: flex-start;
+  margin-top: 20px;
+  border: 3px solid var(--lymhurst);
+  border-radius: 5px;
 
-.card--stats-holder {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: row;
-}
-
-.card--quality {
-    margin-left: 0.2em;
-    padding: 0.3em;
-    color: gold;
-    border: 1px solid gold;
-}
-
-.card--city {
-    color: var(--secondary);
-    font-size: 16px;
+  flex-direction: row;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
 }
 
 .card--title {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: var(--lighttext);
+  width: 35%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+
+  font-size: 1.5em;
+  font-weight: bold;
+
+  background-image: url(./img/lymhurst.png);
+  background-size: cover;
 }
 
-.card--price {
-    width: 15%;
-    text-align: center;
-    /* border: 1px dotted blueviolet; */
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 5px;
-    flex-direction: column;
+.card--stats {
+  width: 65%;
+  border: 1px solid yellow;
+  padding: 0.3em 0.5em 0.3em 0.5em;
+}
+
+.card--buy-sell {
+  display: flex;
+}
+
+.card--buy {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--lymhurst);
+  color: var(--bg);
+  font-weight: bold;
+  border-radius: 5px 0 0 5px;
+}
+
+.card--sell {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--bgaccent);
+  color: var(--bg);
+  font-weight: bold;
+  border-radius: 0 5px 5px 0;
 }
 
 .card--price-amt {
-    color: var(--primary);
-    font-weight: bold;
+  justify-content: flex-end;
+} */
+
+/* 
+.card--title-holder {
+  display: flex;
+  width: 75%;
+  justify-content: center;
+  align-items: center;
+  padding: 0.8em;
 }
+
+.card--stats-holder {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.card--quality {
+  margin-left: 1em;
+  padding: 0.3em;
+  color: gold;
+  border: 1px solid gold;
+  border-radius: 100%;
+  display: relative;
+}
+
+.card--quality::before {
+  content: "QUALITY";
+  position: absolute;
+
+  background: gold;
+  color: var(--tertiary);
+  font-size: 0.5em;
+  transform: translate(-1.6em, -1.5em);
+  padding: 0.2em;
+}
+
+.card--city {
+  color: var(--secondary);
+  font-size: 16px;
+  margin-left: 1em;
+}
+
+.card--title {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+.card--price {
+  width: 50%;
+  text-align: center; */
+/* border: 1px dotted blueviolet; */
+/*  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  flex-direction: column;
+}
+
+.card--price-amt {
+  color: var(--tertiary);
+  font-weight: bold;
+  margin-left: 0.7em;
+}
+
+.card--price-date {
+  color: var(--lighttext);
+  font-size: 0.8em;
+  margin-left: 0.5em;
+} */

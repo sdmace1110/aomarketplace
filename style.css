@@ -3,18 +3,18 @@
 @import url("https://fonts.googleapis.com/css2?family=Moderustic:wght@300..800&display=swap");
 
 :root {
-  --primary: rgb(150, 233, 175);
-  --secondary: rgb(169, 215, 247);
-  --tertiary: rgb(0, 0, 0);
-  --bg: rgb(40, 41, 40);
-  --bglight: rgb(142, 143, 142);
+  --primary: #aa735f;
+  --secondary: #a9ba88;
+  --tertiary: #362018;
+  --bg: #222221;
+  --bglight: rgb(231, 233, 231);
   --bgaccent: rgb(250, 92, 92);
 }
 
 body {
   font-family: "Moderustic", sans-serif;
-  background: var(--bg);
-  color: var(--bglight);
+  background: #222;
+  color: #ddd;
   display: flex;
   justify-content: center;
   align-items: center;

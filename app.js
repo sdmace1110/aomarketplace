@@ -18,8 +18,6 @@ let LOCATION_STR = "";
 fetch("item_list.json")
   .then((response) => response.json())
   .then((data) => {
-    console.log("You've entered the data portion of the fetch function...");
-    // You can now use the JSON data in your application
     try {
       ITEMS_LIST = data;
       console.log("JSON data successfully stored in ITEMS_LIST:", ITEMS_LIST);
@@ -52,15 +50,16 @@ document.getElementById("search").addEventListener("input", function () {
       document.getElementById("search").value = item.LocalizedNames;
       ITEM_ID = item.Index;
       UNIQUE_NAME = item.UniqueName;
-      results = ITEMS_LIST.filter(
-        (item) =>
-          item.LocalizedNames &&
-          item.LocalizedNames.toLowerCase().includes(query)
-      );
+      //addToItemStr(UNIQUE_NAME); // Add item to the items list
       resultsContainer.innerHTML = "";
     });
     resultsContainer.appendChild(li);
   });
+});
+
+// Clear search results
+document.getElementById("search").addEventListener("focus", function () {
+  this.select();
 });
 
 // Create checkboxes for each location
@@ -97,7 +96,6 @@ document.getElementById("itemSelect").addEventListener("click", function () {
   const returnItem = ITEMS_LIST.find((item) => item.Index === selectedId);
   if (returnItem) {
     UNIQUE_NAME = returnItem.UniqueName;
-    console.log(`Selected item UniqueName: ${UNIQUE_NAME}`);
     let sc = document.getElementById("searchCriteria");
     const itemDiv = document.createElement("div");
     itemDiv.className = "returnItem";
@@ -149,55 +147,121 @@ document.getElementById("apiGet").addEventListener("click", function () {
     .then((response) => response.json())
     .then((data) => {
       console.log("You've entered the data portion of the fetch function...");
-      let hasNoData = [];
-      try {
-        console.log("JSON data successfully stored in data:", data);
-        let post = document.getElementById("apiPost");
-        let postData = JSON.stringify(data);
-        post.innerHTML = "";
-        data.forEach((item) => {
-          if (item.sell_price_min === 0 && item.sell_price_max === 0) {
-            hasNoData.push(item);
-          } else {
-            const div = document.createElement("div");
-            let foundItem = false;
-            for (let itemList of ITEMS_LIST) {
-              if (itemList.UniqueName === item.item_id) {
-                ITEM_PROPER = itemList.LocalizedNames;
-                foundItem = true;
-                break;
-              }
-            }
+      let post = document.getElementById("apiPost");
+      post.innerHTML = "";
 
-            div.innerHTML = `<div class="card">
-                                            <div class="card--title-holder">
-                                                <span class="card--title">${ITEM_PROPER} | <span class="card--city">${item.city}</span><span class="card--quality">${item.quality}</span></span>
-                                            </div>
-                                            <div class="card--stats-holder">
-                                                <div class="card--price">
-                                                    Max Buy Price: <span class="card--price-amt">${item.buy_price_max}</span>
-                                                </div>
-                                                <div class="card--price">
-                                                    Min Buy Price: <span class="card--price-amt">${item.buy_price_min}</span>
-                                                </div>
-                                                <div class="card--price">
-                                                    Max Sell Price: <span class="card--price-amt">${item.sell_price_max}</span>
-                                                </div>
-                                                <div class="card--price">
-                                                    Min Sell Price: <span class="card--price-amt">${item.sell_price_min}</span>
-                                                </div>
-                                            </div>
-                                        </div>`;
-            post.appendChild(div);
+      if (
+        data.length === 0 ||
+        data.every(
+          (item) => item.sell_price_min === 0 && item.sell_price_max === 0
+        )
+      ) {
+        post.innerHTML = "NO RETURNS FOUND";
+        return;
+      }
+
+      try {
+        data.forEach((item) => {
+          let foundItem = false;
+          for (let itemList of ITEMS_LIST) {
+            if (itemList.UniqueName === item.item_id) {
+              ITEM_PROPER = itemList.LocalizedNames;
+              foundItem = true;
+              break;
+            }
           }
+
+          if (
+            item.sell_price_min === 0 &&
+            item.sell_price_max === 0 &&
+            item.buy_price_min === 0 &&
+            item.buy_price_max === 0
+          ) {
+            return;
+          }
+          const formatDate = (dateString) => {
+            const options = {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+          };
+
+          item.buy_price_max_date = formatDate(item.buy_price_max_date);
+          item.buy_price_min_date = formatDate(item.buy_price_min_date);
+          item.sell_price_max_date = formatDate(item.sell_price_max_date);
+          item.sell_price_min_date = formatDate(item.sell_price_min_date);
+          item.city = item.city.replace(/\s+/g, "").toLowerCase();
+
+          const card = document.createElement("div");
+          card.className = "card";
+
+          const cityColors = {
+            fortsterling: "#F2FAFF",
+            bridgewatch: "#FFF267",
+            lymhurst: "#13FF02",
+            martlock: "#43EDFF",
+            thetford: "#F617FF",
+            caerleon: "#972A14",
+          };
+
+          item.city = item.city.replace(/\s+/g, "").toLowerCase();
+          const cityColor = cityColors[item.city] || "#000"; // Default color if city not found
+
+          // Create card image div
+          const cardImage = document.createElement("div");
+          cardImage.className = "card-image";
+          cardImage.style.backgroundImage = `url('img/${item.city}.png')`;
+
+          // Create card content div
+          const cardContent = document.createElement("div");
+          cardContent.className = "card-content";
+          cardContent.style.borderColor = cityColor;
+
+          // Create card title div
+          const cardTitle = document.createElement("div");
+          cardTitle.className = "card-title";
+          cardTitle.style.color = cityColor;
+          cardTitle.textContent = ITEM_PROPER;
+
+          // Create card quality div
+          const cardQuality = document.createElement("div");
+          cardQuality.className = "card-quality";
+          cardQuality.textContent = `Quality: ${item.quality}`;
+
+          // Create buy price group div
+          const buyGroup = document.createElement("div");
+          buyGroup.className = "card-group";
+          buyGroup.innerHTML = `
+            <h3>BUY</h3>
+            <p>Min: <span style="color: gold;">${item.buy_price_min}</span> Silver <span style="color: var(--secondary);text-transform: uppercase;">${item.sell_price_min_date}</span></p>
+            <p>Max: <span style="color: gold;">${item.buy_price_max}</span> Silver <span style="color: var(--secondary);text-transform: uppercase;">${item.sell_price_min_date}</span></p>
+          `;
+
+          // Create sell price group div
+          const sellGroup = document.createElement("div");
+          sellGroup.className = "card-group";
+          sellGroup.innerHTML = `
+            <h3>SELL</h3>
+            <p>Min: <span style="color: gold;">${item.sell_price_min}</span> Silver <span style="color: var(--secondary);text-transform: uppercase;">${item.sell_price_min_date}</span></p>
+            <p>Max: <span style="color: gold;">${item.sell_price_max}</span> Silver <span style="color: var(--secondary);text-transform: uppercase;">${item.sell_price_min_date}</span></p>
+          `;
+
+          // Append all elements to card content
+          cardContent.appendChild(cardTitle);
+          cardContent.appendChild(cardQuality);
+          cardContent.appendChild(buyGroup);
+          cardContent.appendChild(sellGroup);
+
+          // Append card image and card content to card
+          card.appendChild(cardImage);
+          card.appendChild(cardContent);
+
+          // Append card to post
+          post.appendChild(card);
         });
-        if (hasNoData.length === data.length) {
-          let post = document.getElementById("apiPost");
-          post.innerHTML = "NO RETURNS FOUND";
-        }
-        console.log("JSON data successfully stored in postData:", postData);
       } catch (error) {
-        let post = document.getElementById("apiPost");
         post.innerHTML = "NO RETURNS FOUND";
         console.error("Error parsing JSON:", error);
       }
@@ -205,4 +269,109 @@ document.getElementById("apiGet").addEventListener("click", function () {
     .catch((error) => {
       console.error("Error fetching JSON:", error);
     });
+});
+
+const activateTester = document.getElementById("tester");
+activateTester.addEventListener("click", () => {
+  let post = document.getElementById("apiPost");
+  post.innerHTML = "";
+  data.forEach((item) => {
+    const div = document.createElement("div");
+    let foundItem = false;
+    for (let itemList of ITEMS_LIST) {
+      if (itemList.UniqueName === item.item_id) {
+        ITEM_PROPER = itemList.LocalizedNames;
+        foundItem = true;
+        break;
+      }
+    }
+
+    const formatDate = (dateString) => {
+      const options = {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    };
+
+    item.buy_price_max_date = formatDate(item.buy_price_max_date);
+    item.buy_price_min_date = formatDate(item.buy_price_min_date);
+    item.sell_price_max_date = formatDate(item.sell_price_max_date);
+    item.sell_price_min_date = formatDate(item.sell_price_min_date);
+    item.city = item.city.replace(/\s+/g, "").toLowerCase();
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const cityColors = {
+      fortsterling: "#F2FAFF",
+      bridgewatch: "#FFF267",
+      lymhurst: "#13FF02",
+      martlock: "#43EDFF",
+      thetford: "#F617FF",
+      caerleon: "#972A14",
+    };
+
+    item.city = item.city.replace(/\s+/g, "").toLowerCase();
+    const cityColor = cityColors[item.city] || "#000"; // Default color if city not found
+
+    // Create card image div
+    const cardImage = document.createElement("div");
+    cardImage.className = "card-image";
+    cardImage.style.backgroundImage = `url('img/${item.city}.png')`;
+
+    // Create card content div
+    const cardContent = document.createElement("div");
+    cardContent.className = "card-content";
+    cardContent.style.borderColor = cityColor;
+
+    // Create card title div
+    const cardTitle = document.createElement("div");
+    cardTitle.className = "card-title";
+    cardTitle.style.color = cityColor;
+    cardTitle.textContent = ITEM_PROPER;
+
+    // Create card quality div
+    const cardQuality = document.createElement("div");
+    cardQuality.className = "card-quality";
+    cardQuality.textContent = `Quality: ${item.quality}`;
+
+    // Create buy price group div
+    const buyGroup = document.createElement("div");
+    buyGroup.className = "card-group";
+    buyGroup.innerHTML = `
+      <h3>BUY</h3>
+      <p>Min: ${item.buy_price_min} Silver</p>
+      <p>Max: ${item.buy_price_max} Silver</p>
+    `;
+
+    // Create sell price group div
+    const sellGroup = document.createElement("div");
+    sellGroup.className = "card-group";
+    sellGroup.innerHTML = `
+      <h3>SELL</h3>
+      <p>Min: ${item.sell_price_min} Silver</p>
+      <p>Max: ${item.sell_price_max} Silver</p>
+    `;
+
+    // Append all elements to card content
+    cardContent.appendChild(cardTitle);
+    cardContent.appendChild(cardQuality);
+    cardContent.appendChild(buyGroup);
+    cardContent.appendChild(sellGroup);
+
+    // Append card image and card content to card
+    card.appendChild(cardImage);
+    card.appendChild(cardContent);
+
+    // Append card to post
+    post.appendChild(card);
+  });
+
+  if (
+    data.every((item) => item.sell_price_min === 0 && item.sell_price_max === 0)
+  ) {
+    post.innerHTML = "NO RETURNS FOUND";
+  }
 });
